@@ -1,6 +1,33 @@
-// TODO: Put public facing types in this file.
+library stability_base;
 
-/// Checks if you are awesome. Spoiler: you are.
-class Awesome {
-  bool get isAwesome => true;
+import 'package:stability/src/platform/stub.dart';
+
+class StabilityAI {
+  StabilityAI({String? apiKey}) {
+    final apiK = apiKey ?? StabilityPlatform.instance.apiKeyEnv;
+
+    if (apiK == null) {
+      throw ArgumentError("API Key is required");
+    }
+
+    _defaultHeaders["Authorization"] = "Bearer $apiK";
+  }
+
+  final Map<String, String> _defaultHeaders = {};
+
+  final String _baseUrl = "https://api.stability.ai";
+
+
+
+}
+
+abstract class StabilityModule {
+  final StabilityAI _stabilityAI;
+
+  StabilityModule(this._stabilityAI);
+
+  String get segment;
+
+
+
 }
