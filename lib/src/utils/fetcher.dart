@@ -1,7 +1,29 @@
 part of '../stability_base.dart';
 
-class StreamResponseHandler {
-  StreamResponseHandler(this._response);
+class FileHandler {
+  FileHandler._(this._responseHandler);
+
+  final _StreamResponseHandler _responseHandler;
+
+  Future<void> writeToFile(String path) async {
+    return _responseHandler.writeToFile(path);
+  }
+
+  Future<Uint8List> readBytes() async {
+    return _responseHandler.readBytes();
+  }
+
+  Future<(int seed, FinishReason finishReason)> readHeaders() async {
+    final headers = await _responseHandler._response.then((e) => e.headers);
+    final seed = int.parse(headers['seed']!);
+    final finishReason = FinishReason.fromValue(headers['finish_reason']!);
+
+    return (seed, finishReason);
+  }
+}
+
+class _StreamResponseHandler {
+  _StreamResponseHandler(this._response);
 
   final Future<http.StreamedResponse> _response;
 
@@ -35,10 +57,7 @@ class StreamResponseHandler {
     _throwIfNotOk();
 
     final response = await _response;
-
-    final res = await response.stream.toBytes();
-
-    return res;
+    return response.stream.toBytes();
   }
 
   Future<String> readAsString() async {
@@ -63,16 +82,17 @@ class _StabilityFetcher {
 
   final Map<String, String> _defaultHeaders = {};
 
-  Uri _uri(_PathSegment from, String path ,{Map<String, String>? query}) {
+  Uri _uri(_PathSegment from, String path, {Map<String, String>? query}) {
     return Uri.parse(from._buildPath() + path).replace(queryParameters: query);
   }
 
-  StreamResponseHandler _multipartRequest(
+  _StreamResponseHandler _multipartRequest(
       _PathSegment from, String path, String method,
       {required Map<String, dynamic> body,
       Map<String, String>? headers,
-      Map<String, String>? query})  {
-    final request = http.MultipartRequest(method, _uri(from, path, query: query));
+      Map<String, String>? query}) {
+    final request =
+        http.MultipartRequest(method, _uri(from, path, query: query));
 
     body.forEach((key, value) {
       if (value is http.MultipartFile) {
@@ -87,31 +107,33 @@ class _StabilityFetcher {
       ...headers ?? {},
     });
 
-    return StreamResponseHandler(request.send());
+    return _StreamResponseHandler(request.send());
   }
 
-  StreamResponseHandler _jsonRequest(_PathSegment from, String path, String method,
+  _StreamResponseHandler _jsonRequest(
+      _PathSegment from, String path, String method,
       {required Map<String, dynamic>? body,
       Map<String, String>? headers,
-      Map<String, String>? query})  {
+      Map<String, String>? query}) {
     final req = http.StreamedRequest(method, _uri(from, path, query: query));
 
     req.headers.addAll({
       ..._defaultHeaders,
+      "Content-Type": "application/json",
       ...headers ?? {},
     });
 
     if (body != null) {
       final bodyString = jsonEncode(body);
-      final bodyStream =
-          http.ByteStream(Stream.fromIterable([utf8.encode(bodyString)]));
-      final contentLength = utf8.encode(bodyString).length;
+      final encoded = utf8.encode(bodyString);
+      final contentLength = encoded.length;
 
       req.contentLength = contentLength;
-      req.sink.addStream(bodyStream);
+      req.sink.add(encoded);
     }
 
-    return StreamResponseHandler(req.send());
-  }
+    req.sink.close();
 
+    return _StreamResponseHandler(req.send());
+  }
 }

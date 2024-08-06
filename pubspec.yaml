@@ -1,16 +1,14 @@
 name: stability
-description: Stability AI dart package. Internal http implementation. No external dependencies.
-version: 1.0.0
+description: Stability AI dart package. Includes all the necessary tools to work with the Stability AI API. All endpoints implemented.
+version: 0.0.1+2
 repository: https://github.com/Mehmetyaz/stability
 homepage: https://github.com/Mehmetyaz/stability
 
 environment:
-  sdk: ^3.4.3
+  sdk: ^3.5.0
 
-# Add regular dependencies here.
 dependencies:
   http: ^1.2.2
-  # path: ^1.8.0
 
 dev_dependencies:
   lints: ^4.0.0
