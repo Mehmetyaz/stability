@@ -1,14 +1,14 @@
-enum ResolveType {
-  json,
-  text,
-  bytes,
-}
+
 
 enum Method {
   get,
   post,
   put,
-  delete,
+  delete;
+
+  String get value {
+    return name.toUpperCase();
+  }
 }
 
 class StabilityError {
