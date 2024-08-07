@@ -215,37 +215,41 @@ class SDXLModule with _PathSegment {
     ensureRange(steps, 10, 50, "steps");
     ensureCfgScale(cfgScale);
 
-    final body = {
-      for (var i = 0; i < prompts.length; i++)
-        "text_prompts[$i][text]": prompts[i].text,
-      for (var i = 0; i < prompts.length; i++)
-        if (prompts[i].weight != null)
-          "text_prompts[$i][weight]": prompts[i].weight,
-      "init_image": image.toMultipartFile("init_image"),
-      if (initImageMode != null) ...initImageMode._toJson(),
-      if (cfgScale != null) "cfg_scale": cfgScale,
-      if (clipGuidancePreset != null)
-        "clip_guidance_preset": clipGuidancePreset.value,
-      if (sampler != null) "sampler": sampler.value,
-      if (samples != null) "samples": samples,
-      if (seed != null) "seed": seed,
-      if (steps != null) "steps": steps,
-      if (extras != null) "extras": extras,
-      if (stylePreset != null) "style_preset": stylePreset.value,
-    };
+    try {
+      final body = {
+        for (var i = 0; i < prompts.length; i++)
+          "text_prompts[$i][text]": prompts[i].text,
+        for (var i = 0; i < prompts.length; i++)
+          if (prompts[i].weight != null)
+            "text_prompts[$i][weight]": prompts[i].weight,
+        "init_image": image.toMultipartFile("init_image"),
+        if (initImageMode != null) ...initImageMode._toJson(),
+        if (cfgScale != null) "cfg_scale": cfgScale,
+        if (clipGuidancePreset != null)
+          "clip_guidance_preset": clipGuidancePreset.value,
+        if (sampler != null) "sampler": sampler.value,
+        if (samples != null) "samples": samples,
+        if (seed != null) "seed": seed,
+        if (steps != null) "steps": steps,
+        if (extras != null) "extras": extras,
+        if (stylePreset != null) "style_preset": stylePreset.value,
+      };
 
-    final res = await _fetcher._multipartRequest(
-        this, "/image-to-image", "POST", body: body, headers: {
-      "Accept": "application/json"
-    }).readAsJson<Map<String, dynamic>>();
+      final res = await _fetcher._multipartRequest(
+          this, "/image-to-image", "POST", body: body, headers: {
+        "Accept": "application/json"
+      }).readAsJson<Map<String, dynamic>>();
 
-    return (res["artifacts"] as List).map((e) {
-      return (
-        image: Base64File(base64: e['base64']),
-        finishReason: FinishReason.fromValue(e['finishReason']),
-        seed: e['seed'] as int,
-      );
-    }).toList();
+      return (res["artifacts"] as List).map((e) {
+        return (
+          image: Base64File(base64: e['base64']),
+          finishReason: FinishReason.fromValue(e['finishReason']),
+          seed: e['seed'] as int,
+        );
+      }).toList();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   /// https://platform.stability.ai/docs/api-reference#tag/SDXL-and-SD1.6/operation/upscaleImage
