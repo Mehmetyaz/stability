@@ -159,21 +159,18 @@ class FileFrom {
   final String? contentType;
 
   /// Get a file from path.
-  factory FileFrom.path(String path, [String? contentType]) => FileFrom._(path: path,contentType: contentType);
+  factory FileFrom.path(String path, [String? contentType]) =>
+      FileFrom._(path: path, contentType: contentType);
 
   /// Get a file from bytes.
-  factory FileFrom.bytes(Uint8List bytes, [String? contentType]) => FileFrom._(bytes: bytes,contentType: contentType);
+  factory FileFrom.bytes(Uint8List bytes, [String? contentType]) =>
+      FileFrom._(bytes: bytes, contentType: contentType);
 
   /// Get a file from base64 content.
-  factory FileFrom.base64(String base64, [String? contentType]) => FileFrom._(base64: base64,contentType: contentType);
+  factory FileFrom.base64(String base64, [String? contentType]) =>
+      FileFrom._(base64: base64, contentType: contentType);
 
-
-  FileFrom._({
-    this.path,
-    this.bytes,
-    this.base64,
-    this.contentType
-  });
+  FileFrom._({this.path, this.bytes, this.base64, this.contentType});
 
   /// Convert to [MultipartFile].
   MultipartFile toMultipartFile(String field) {
@@ -183,11 +180,18 @@ class FileFrom {
       var file = File(path!);
       var length = file.lengthSync();
       var stream = ByteStream(file.openRead());
-      return MultipartFile(field, stream, length, filename: filename);
+      return MultipartFile(field, stream, length,
+          filename: filename,
+          contentType:
+              contentType == null ? null : MediaType.parse(contentType!));
     } else if (bytes != null) {
-      return MultipartFile.fromBytes(field, bytes!);
+      return MultipartFile.fromBytes(field, bytes!,
+          contentType:
+              contentType == null ? null : MediaType.parse(contentType!));
     } else if (base64 != null) {
-      return MultipartFile.fromString(field, base64!);
+      return MultipartFile.fromString(field, base64!,
+          contentType:
+              contentType == null ? null : MediaType.parse(contentType!));
     } else {
       throw ArgumentError("One of path, bytes or base64 must be provided");
     }

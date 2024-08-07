@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
 
 part 'utils/types.dart';
 part 'utils/validators.dart';
