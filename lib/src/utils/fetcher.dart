@@ -106,7 +106,7 @@ class _StreamResponseHandler {
   Future<void> writeToFile(String path) async {
     try {
       final file = File(path);
-     await _throwIfNotOk();
+      await _throwIfNotOk();
       final response = await _response;
       return response.stream.pipe(file.openWrite());
     } catch (e) {
@@ -139,6 +139,9 @@ class _StabilityFetcher {
           request.fields[key] = value.toString();
         }
       });
+
+      print("REQ FILES: ${request.files}");
+      print("REQ FIELDS: ${request.fields}");
 
       request.headers.addAll({
         ..._defaultHeaders,
