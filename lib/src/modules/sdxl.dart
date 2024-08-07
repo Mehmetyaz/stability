@@ -209,7 +209,7 @@ class SDXLModule with _PathSegment {
     int? steps,
     Map<String, dynamic>? extras,
     StylePreset? stylePreset,
-  }) {
+  }) async {
     ensureRange(samples, 1, 10, "samples");
     ensureMin(seed, 0, "seed");
     ensureRange(steps, 10, 50, "steps");
@@ -234,17 +234,18 @@ class SDXLModule with _PathSegment {
       if (stylePreset != null) "style_preset": stylePreset.value,
     };
 
-    return _fetcher
-        ._multipartRequest(this, "/image-to-image", "POST",
-            body: body, headers: {"Accept": "application/json"})
-        .readAsJson<Map<String, dynamic>>()
-        .then((e) => (e["artifacts"] as List)
-            .map((e) => (
-                  image: Base64File(base64: e['base64']),
-                  finishReason: FinishReason.fromValue(e['finishReason']),
-                  seed: e['seed'] as int,
-                ))
-            .toList());
+    final res = await _fetcher._multipartRequest(
+        this, "/image-to-image", "POST", body: body, headers: {
+      "Accept": "application/json"
+    }).readAsJson<Map<String, dynamic>>();
+
+    return (res["artifacts"] as List).map((e) {
+      return (
+        image: Base64File(base64: e['base64']),
+        finishReason: FinishReason.fromValue(e['finishReason']),
+        seed: e['seed'] as int,
+      );
+    }).toList();
   }
 
   /// https://platform.stability.ai/docs/api-reference#tag/SDXL-and-SD1.6/operation/upscaleImage

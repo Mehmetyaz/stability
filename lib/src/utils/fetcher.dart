@@ -6,19 +6,31 @@ class FileHandler {
   final _StreamResponseHandler _responseHandler;
 
   Future<void> writeToFile(String path) async {
-    return _responseHandler.writeToFile(path);
+    try {
+      return _responseHandler.writeToFile(path);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<Uint8List> readBytes() async {
-    return _responseHandler.readBytes();
+    try {
+      return _responseHandler.readBytes();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<(int seed, FinishReason finishReason)> readHeaders() async {
-    final headers = await _responseHandler._response.then((e) => e.headers);
-    final seed = int.parse(headers['seed']!);
-    final finishReason = FinishReason.fromValue(headers['finish_reason']!);
+    try {
+      final headers = await _responseHandler._response.then((e) => e.headers);
+      final seed = int.parse(headers['seed']!);
+      final finishReason = FinishReason.fromValue(headers['finish_reason']!);
 
-    return (seed, finishReason);
+      return (seed, finishReason);
+    } catch (e) {
+      rethrow;
+    }
   }
 }
 
@@ -38,42 +50,68 @@ class _StreamResponseHandler {
   }
 
   Future<Map<String, dynamic>> _asJson() async {
-    final response = await _response;
     try {
-      final body = await response.stream.bytesToString();
-      return jsonDecode(body);
+      try {
+        final response = await _response;
+        try {
+          final body = await response.stream.bytesToString();
+          return jsonDecode(body);
+        } catch (e) {
+          throw StabilityError(
+              status: response.statusCode,
+              statusText: response.reasonPhrase ?? "unknown",
+              body: {
+                "error": "Failed to parse response as JSON",
+                "message": e.toString(),
+              });
+        }
+      } catch (e) {
+        rethrow;
+      }
     } catch (e) {
-      throw StabilityError(
-          status: response.statusCode,
-          statusText: response.reasonPhrase ?? "unknown",
-          body: {
-            "error": "Failed to parse response as JSON",
-            "message": e.toString(),
-          });
+      rethrow;
     }
   }
 
   Future<Uint8List> readBytes() async {
-    _throwIfNotOk();
+    try {
+      _throwIfNotOk();
 
-    final response = await _response;
-    return response.stream.toBytes();
+      final response = await _response;
+      return response.stream.toBytes();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<String> readAsString() async {
+    try {
+      return utf8.decode(await readBytes());
+    } catch (e) {
+      rethrow;
+    }
+
     return utf8.decode(await readBytes());
   }
 
   Future<T> readAsJson<T>() async {
-    final body = await readAsString();
-    return jsonDecode(body);
+    try {
+      final body = await readAsString();
+      return jsonDecode(body);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> writeToFile(String path) async {
-    final file = File(path);
-    _throwIfNotOk();
-    final response = await _response;
-    return response.stream.pipe(file.openWrite());
+    try {
+      final file = File(path);
+      _throwIfNotOk();
+      final response = await _response;
+      return response.stream.pipe(file.openWrite());
+    } catch (e) {
+      rethrow;
+    }
   }
 }
 
@@ -91,22 +129,26 @@ class _StabilityFetcher {
       {required Map<String, dynamic> body,
       Map<String, String>? headers,
       Map<String, String>? query}) {
-    final request = MultipartRequest(method, _uri(from, path, query: query));
+    try {
+      final request = MultipartRequest(method, _uri(from, path, query: query));
 
-    body.forEach((key, value) {
-      if (value is MultipartFile) {
-        request.files.add(value);
-      } else {
-        request.fields[key] = value.toString();
-      }
-    });
+      body.forEach((key, value) {
+        if (value is MultipartFile) {
+          request.files.add(value);
+        } else {
+          request.fields[key] = value.toString();
+        }
+      });
 
-    request.headers.addAll({
-      ..._defaultHeaders,
-      ...headers ?? {},
-    });
+      request.headers.addAll({
+        ..._defaultHeaders,
+        ...headers ?? {},
+      });
 
-    return _StreamResponseHandler(request.send());
+      return _StreamResponseHandler(request.send());
+    } catch (e) {
+      rethrow;
+    }
   }
 
   _StreamResponseHandler _jsonRequest(
@@ -114,25 +156,29 @@ class _StabilityFetcher {
       {required Map<String, dynamic>? body,
       Map<String, String>? headers,
       Map<String, String>? query}) {
-    final req = StreamedRequest(method, _uri(from, path, query: query));
+    try {
+      final req = StreamedRequest(method, _uri(from, path, query: query));
 
-    req.headers.addAll({
-      ..._defaultHeaders,
-      "Content-Type": "application/json",
-      ...headers ?? {},
-    });
+      req.headers.addAll({
+        ..._defaultHeaders,
+        "Content-Type": "application/json",
+        ...headers ?? {},
+      });
 
-    if (body != null) {
-      final bodyString = jsonEncode(body);
-      final encoded = utf8.encode(bodyString);
-      final contentLength = encoded.length;
+      if (body != null) {
+        final bodyString = jsonEncode(body);
+        final encoded = utf8.encode(bodyString);
+        final contentLength = encoded.length;
 
-      req.contentLength = contentLength;
-      req.sink.add(encoded);
+        req.contentLength = contentLength;
+        req.sink.add(encoded);
+      }
+
+      req.sink.close();
+
+      return _StreamResponseHandler(req.send());
+    } catch (e) {
+      rethrow;
     }
-
-    req.sink.close();
-
-    return _StreamResponseHandler(req.send());
   }
 }
