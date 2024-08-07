@@ -82,7 +82,7 @@ class MaskWhite implements MaskSource {
   @override
   Map<String, dynamic> _toJson() {
     return {
-      "mask_image": file.toMultipartFile("mask"),
+      "mask_image": file.toMultipartFile("mask_image"),
       "mask_source": "MASK_IMAGE_WHITE",
     };
   }
@@ -98,7 +98,7 @@ class MaskBlack implements MaskSource {
   @override
   Map<String, dynamic> _toJson() {
     return {
-      "mask_image": file.toMultipartFile("mask"),
+      "mask_image": file.toMultipartFile("mask_image"),
       "mask_source": "MASK_IMAGE_BLACK",
     };
   }
@@ -221,7 +221,7 @@ class SDXLModule with _PathSegment {
       for (var i = 0; i < prompts.length; i++)
         if (prompts[i].weight != null)
           "text_prompts[$i][weight]": prompts[i].weight,
-      "init_image": image.toMultipartFile("image"),
+      "init_image": image.toMultipartFile("init_image"),
       if (initImageMode != null) ...initImageMode._toJson(),
       if (cfgScale != null) "cfg_scale": cfgScale,
       if (clipGuidancePreset != null)
@@ -298,7 +298,7 @@ class SDXLWithMaskModule extends SDXLModule {
       for (var i = 0; i < prompts.length; i++)
         if (prompts[i].weight != null)
           "text_prompts[$i][weight]": prompts[i].weight,
-      "init_image": image.toMultipartFile("image"),
+      "init_image": image.toMultipartFile("init_image"),
       ...maskSource._toJson(),
       if (cfgScale != null) "cfg_scale": cfgScale,
       if (clipGuidancePreset != null)
