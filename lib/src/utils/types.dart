@@ -156,19 +156,23 @@ class FileFrom {
   /// File base64 content.
   final String? base64;
 
+  final String? contentType;
+
   /// Get a file from path.
-  FileFrom.path(String path) : this._(path: path);
+  factory FileFrom.path(String path, [String? contentType]) => FileFrom._(path: path,contentType: contentType);
 
   /// Get a file from bytes.
-  FileFrom.bytes(Uint8List bytes) : this._(bytes: bytes);
+  factory FileFrom.bytes(Uint8List bytes, [String? contentType]) => FileFrom._(bytes: bytes,contentType: contentType);
 
   /// Get a file from base64 content.
-  FileFrom.base64(String base64) : this._(base64: base64);
+  factory FileFrom.base64(String base64, [String? contentType]) => FileFrom._(base64: base64,contentType: contentType);
+
 
   FileFrom._({
     this.path,
     this.bytes,
     this.base64,
+    this.contentType
   });
 
   /// Convert to [MultipartFile].
