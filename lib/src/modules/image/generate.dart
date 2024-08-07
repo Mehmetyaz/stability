@@ -160,6 +160,7 @@ class StableImageGenerate with _PathSegment {
     final body = {
       "image": image.toMultipartFile("image"),
       "strength": strength,
+      "mode": "image-to-image",
       if (prompt != null) "prompt": prompt,
       if (aspectRatio != null) "aspect_ratio": aspectRatio.value,
       if (model != null) "model": model.value,
