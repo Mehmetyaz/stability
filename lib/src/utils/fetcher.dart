@@ -75,7 +75,7 @@ class _StreamResponseHandler {
 
   Future<Uint8List> readBytes() async {
     try {
-      _throwIfNotOk();
+      await _throwIfNotOk();
 
       final response = await _response;
       return response.stream.toBytes();
@@ -106,7 +106,7 @@ class _StreamResponseHandler {
   Future<void> writeToFile(String path) async {
     try {
       final file = File(path);
-      _throwIfNotOk();
+     await _throwIfNotOk();
       final response = await _response;
       return response.stream.pipe(file.openWrite());
     } catch (e) {
