@@ -90,8 +90,6 @@ class _StreamResponseHandler {
     } catch (e) {
       rethrow;
     }
-
-    return utf8.decode(await readBytes());
   }
 
   Future<T> readAsJson<T>() async {
