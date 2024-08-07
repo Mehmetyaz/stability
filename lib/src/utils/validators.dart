@@ -1,3 +1,5 @@
+part of '../stability_base.dart';
+
 /// Ensures that the given value is a correct cfg_scale value.
 void ensureCfgScale(double? cfgScale) {
   if (cfgScale != null && (cfgScale < 0 || cfgScale > 35)) {

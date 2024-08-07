@@ -44,4 +44,5 @@
 ///
 library;
 
-export 'src/stability_base.dart';
+export 'src/stability_base.dart'
+    hide ensureMax, ensureMin, ensureDivisibleBy, ensureCfgScale, ensureRange;

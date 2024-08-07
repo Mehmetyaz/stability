@@ -198,7 +198,7 @@ class SDXLModule with _PathSegment {
   /// https://platform.stability.ai/docs/api-reference#tag/SDXL-and-SD1.6/operation/imageToImage
   Future<List<({Base64File image, FinishReason finishReason, int seed})>>
       imageToImageWithPrompt({
-    required List<({String text, double? weight})> prompts,
+    required List<Prompt> prompts,
     required FileFrom image,
     InitImageMode? initImageMode,
     double? cfgScale,
@@ -275,7 +275,7 @@ class SDXLWithMaskModule extends SDXLModule {
   /// https://platform.stability.ai/docs/api-reference#tag/SDXL-and-SD1.6/operation/masking
   Future<List<({Base64File image, FinishReason finishReason, int seed})>>
       imageToImageWithMask({
-    required List<({String text, double? weight})> prompts,
+    required List<Prompt> prompts,
     required FileFrom image,
     required MaskSource maskSource,
     int? cfgScale,

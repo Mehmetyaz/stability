@@ -5,10 +5,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:http/http.dart' as http;
-import 'package:stability/src/utils/types.dart';
-import 'package:stability/src/utils/validators.dart';
+import 'package:http/http.dart';
 
+part 'utils/types.dart';
+part 'utils/validators.dart';
 part 'utils/fetcher.dart';
 
 part 'modules/user.dart';

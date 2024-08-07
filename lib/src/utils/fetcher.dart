@@ -25,7 +25,7 @@ class FileHandler {
 class _StreamResponseHandler {
   _StreamResponseHandler(this._response);
 
-  final Future<http.StreamedResponse> _response;
+  final Future<StreamedResponse> _response;
 
   Future<void> _throwIfNotOk() async {
     final response = await _response;
@@ -91,11 +91,10 @@ class _StabilityFetcher {
       {required Map<String, dynamic> body,
       Map<String, String>? headers,
       Map<String, String>? query}) {
-    final request =
-        http.MultipartRequest(method, _uri(from, path, query: query));
+    final request = MultipartRequest(method, _uri(from, path, query: query));
 
     body.forEach((key, value) {
-      if (value is http.MultipartFile) {
+      if (value is MultipartFile) {
         request.files.add(value);
       } else {
         request.fields[key] = value.toString();
@@ -115,7 +114,7 @@ class _StabilityFetcher {
       {required Map<String, dynamic>? body,
       Map<String, String>? headers,
       Map<String, String>? query}) {
-    final req = http.StreamedRequest(method, _uri(from, path, query: query));
+    final req = StreamedRequest(method, _uri(from, path, query: query));
 
     req.headers.addAll({
       ..._defaultHeaders,
