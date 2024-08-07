@@ -186,10 +186,12 @@ class FileFrom {
               contentType == null ? null : MediaType.parse(contentType!));
     } else if (bytes != null) {
       return MultipartFile.fromBytes(field, bytes!,
+          filename: "file",
           contentType:
               contentType == null ? null : MediaType.parse(contentType!));
     } else if (base64 != null) {
       return MultipartFile.fromString(field, base64!,
+          filename: "file",
           contentType:
               contentType == null ? null : MediaType.parse(contentType!));
     } else {

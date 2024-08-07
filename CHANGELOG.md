@@ -1,3 +1,7 @@
+## 0.0.2+1
+
+- fix errors
+
 ## 0.0.2
 
 - added necessary exports

@@ -169,8 +169,6 @@ class StableImageGenerate with _PathSegment {
       if (negativePrompt != null) "negative_prompt": negativePrompt,
     };
 
-    print("BODY $body");
-
     return FileHandler._(
         _fetcher._multipartRequest(this, "/sd3", "POST", body: body, headers: {
       "Accept": "image/*",

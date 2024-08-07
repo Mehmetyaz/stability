@@ -1,6 +1,6 @@
 name: stability
 description: Stability AI dart package. Includes all the necessary tools to work with the Stability AI API. All endpoints implemented.
-version: 0.0.2
+version: 0.0.2+1
 repository: https://github.com/Mehmetyaz/stability
 homepage: https://github.com/Mehmetyaz/stability
 

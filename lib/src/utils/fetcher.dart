@@ -140,9 +140,6 @@ class _StabilityFetcher {
         }
       });
 
-      print("REQ FILES: ${request.files}");
-      print("REQ FIELDS: ${request.fields}");
-
       request.headers.addAll({
         ..._defaultHeaders,
         ...headers ?? {},
